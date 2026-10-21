@@ -172,7 +172,7 @@ var rtkSpecs = map[string]rtkSpec{
 		},
 		dir: func(*agent.Agent) string { return filepath.Join(home(), ".copilot") },
 	},
-	// Antigravity CLI (agy): rtk 0.51 on writes a plugin of its own into
+	// Antigravity (agy): rtk 0.51 on writes a plugin of its own into
 	// Antigravity's global customization folder, ~/.gemini/config, shared
 	// by the CLI and the IDE (src/hooks/init/antigravity.rs): plugin.json,
 	// hooks.json (PreToolUse → rtk hook antigravity) and rules/AGENTS.md,
@@ -311,7 +311,7 @@ func agyBlocked() string {
 	if v == "" || !older(v, 0, 51) {
 		return ""
 	}
-	return fmt.Sprintf("Antigravity CLI's hook needs RTK 0.51 or newer, and this RTK is %s, which installs it only per project, not for every project. Update RTK (brew upgrade rtk, or its installer again), then switch it on", v)
+	return fmt.Sprintf("Antigravity's hook needs RTK 0.51 or newer, and this RTK is %s, which installs it only per project, not for every project. Update RTK (brew upgrade rtk, or its installer again), then switch it on", v)
 }
 
 // older says whether version v is before major.minor.

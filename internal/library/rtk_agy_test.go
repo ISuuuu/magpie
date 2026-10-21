@@ -46,7 +46,7 @@ J
 echo '{"name": "rtk", "version": "1.0.0"}' > "$d/plugin.json"
 `
 
-// #2202 (Chichengmo): Antigravity CLI wasn't on the RTK page at all,
+// #2202 (Chichengmo): Antigravity wasn't on the RTK page at all,
 // though rtk 0.51 has an Antigravity agent. It is listed, switched on with
 // rtk's installer, switched off by magpie taking rtk's plugin out (and only
 // it), and an rtk before 0.51, which has no such agent, isn't run for it.
@@ -58,7 +58,7 @@ func TestRTKAntigravity(t *testing.T) {
 	bin := filepath.Join(h, "bin")
 	testenv.Program(t, filepath.Join(bin, "rtk"), fakeRTKAgy)
 	t.Setenv("PATH", bin)
-	// Antigravity CLI is here by its folder
+	// Antigravity is here by its folder
 	write(t, filepath.Join(h, ".gemini", "antigravity-cli", "settings.json"), "{}")
 	// another plugin of the user's beside rtk's stays
 	mine := filepath.Join(h, ".gemini", "config", "plugins", "mine", "plugin.json")
@@ -71,7 +71,7 @@ func TestRTKAntigravity(t *testing.T) {
 				return &a
 			}
 		}
-		t.Fatal("Antigravity CLI isn't on the RTK page")
+		t.Fatal("Antigravity isn't on the RTK page")
 		return nil
 	}
 
@@ -94,7 +94,7 @@ func TestRTKAntigravity(t *testing.T) {
 		t.Fatal(err)
 	}
 	if a := row(); !a.On {
-		t.Fatal("Antigravity CLI isn't seen with rtk on")
+		t.Fatal("Antigravity isn't seen with rtk on")
 	}
 	if id, err := RTKTakes("agy"); err != nil || id != "agy" {
 		t.Fatalf("RTKTakes(agy) = %q, %v", id, err)
@@ -109,7 +109,7 @@ func TestRTKAntigravity(t *testing.T) {
 		t.Error("the user's own plugin was taken out with rtk's")
 	}
 	if a := row(); a.On {
-		t.Fatal("Antigravity CLI still seen with rtk on")
+		t.Fatal("Antigravity still seen with rtk on")
 	}
 	os.Remove(mine)
 }

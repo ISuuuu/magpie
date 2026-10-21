@@ -704,7 +704,7 @@ type matchGroup struct {
 	counts []int
 }
 
-// agyMatchSession stands for the session of an Antigravity CLI (agy) call
+// agyMatchSession stands for the session of an Antigravity (agy) call
 // on both sides: agy sends the gateway no session header, so its gateway
 // records name none, and its transcript's steps are matched to them by
 // their tokens and time alone (#2097).

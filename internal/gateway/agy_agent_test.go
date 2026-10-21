@@ -12,7 +12,7 @@ import (
 	"github.com/yetone/magpie/internal/usage"
 )
 
-// Antigravity CLI (agy) asks as Google's Gemini SDK, its User-Agent
+// Antigravity (agy) asks as Google's Gemini SDK, its User-Agent
 // google-genai-sdk/… with nothing of agy's own, and sends its key as
 // x-goog-api-key; the key magpie starts it with names it (TokenFor), so its
 // calls are recorded as agy's, as Gemini's ?key= names it too. A command
@@ -58,7 +58,7 @@ func TestAgyAgent(t *testing.T) {
 	}
 }
 
-// Antigravity CLI sends its tools' results under "model", right after the
+// Antigravity sends its tools' results under "model", right after the
 // call (captured from agy against a stub): kept there, a conversation that
 // ran a tool ends with the model's turn, and Antigravity answers 400
 // "Requests ending with a model turn are not supported" (#650) — straight

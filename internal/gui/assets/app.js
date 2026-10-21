@@ -5100,7 +5100,7 @@ function contextTag(n, name) {
 // ellipsis can't cut off: the others' "· via magpie" ended their notes,
 // where Claude Code's was a tag (EZN7L2C3, #834). Codex's own models,
 // through magpie while it is routed, say so too (via); Codex's, Grok
-// Build's and Antigravity CLI's own said nothing at all
+// Build's and Antigravity's own said nothing at all
 function pathTag(o) {
   if (!pick?.agent || o.custom || o.run) return null;
   let tag = null;

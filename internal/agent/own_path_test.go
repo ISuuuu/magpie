@@ -10,7 +10,7 @@ import (
 // (EZN7L2C3, #834: Codex 下拉选项中没有 via magpie; agy 和 grok 没有同步):
 // Codex's go to OpenAI directly until it is routed through magpie, then
 // via magpie; Grok Build lists the models it last listed itself, straight
-// to xAI, and its own tables' to their endpoint; Antigravity CLI's own
+// to xAI, and its own tables' to their endpoint; Antigravity's own
 // custom models go to their provider; DeepSeek Harness's go to DeepSeek.
 func TestOwnModelsSayTheirPath(t *testing.T) {
 	home := t.TempDir()
@@ -80,11 +80,11 @@ func TestOwnModelsSayTheirPath(t *testing.T) {
 		t.Errorf("Grok's own table: %+v", o)
 	}
 
-	// Antigravity CLI
+	// Antigravity
 	ag := filepath.Join(home, ".gemini", "antigravity-cli")
 	os.MkdirAll(ag, 0o755)
 	os.WriteFile(filepath.Join(ag, "settings.json"), []byte(`{"customModelsConfig":{"customModels":{"mine":{"apiProvider":"API_PROVIDER_ANTHROPIC","modelName":"claude-x"}}}}`), 0o644)
-	if o := ownOf(agy(home), "Antigravity CLI"); len(o) != 1 || o[0].Direct != "Anthropic" {
+	if o := ownOf(agy(home), "Antigravity"); len(o) != 1 || o[0].Direct != "Anthropic" {
 		t.Errorf("agy's own: %+v", o)
 	}
 

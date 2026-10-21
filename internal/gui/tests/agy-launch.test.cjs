@@ -1,5 +1,5 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// Antigravity CLI (agy) takes magpie's gateway only from its environment, so
+// Antigravity (agy) takes magpie's gateway only from its environment, so
 // its row on the Agents page has a square that copies the command starting
 // it on magpie, once it is connected (right before the model picker beside
 // its switch, agy picking no model once started): the command in its tooltip, one click copying it (posted to /api/copy) and saying so, with the
@@ -20,7 +20,7 @@ const agent = (id, name, launch) => ({
 });
 const state = {
   agents: [agent("claude", "Claude Code"), ...Array.from({ length: 4 }, (_, i) => agent("agent-" + i, "agent-" + i)),
-    agent("agy", "Antigravity CLI", LAUNCH), ...Array.from({ length: 8 }, (_, i) => agent("more-" + i, "more-" + i))],
+    agent("agy", "Antigravity", LAUNCH), ...Array.from({ length: 8 }, (_, i) => agent("more-" + i, "more-" + i))],
   profiles: [],
 };
 
@@ -69,7 +69,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       assert.equal(await b.count(), 1);
       assert.equal(await page.locator(`${row("claude")} .field.launch`).count(), 0, "only an agent with a launch command has one");
       const title = await b.getAttribute("title");
-      assert.match(title, /Antigravity CLI takes magpie only from its environment/);
+      assert.match(title, /Antigravity takes magpie only from its environment/);
       assert(title.includes(LAUNCH), title);
       // on the row, right before the model it starts on, so the pickers
       // and the switches line up down the list
@@ -88,7 +88,7 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       await b.click();
       await page.waitForTimeout(300);
       assert.deepEqual(copies, [LAUNCH]);
-      assert.match(await page.locator("#status").textContent(), /Copied — run it to start Antigravity CLI on magpie/);
+      assert.match(await page.locator("#status").textContent(), /Copied — run it to start Antigravity on magpie/);
       assert.equal(await view.evaluate((v) => v.scrollTop), top, "the click moved the page");
       assert.equal(await page.locator(`${row("agy")} .picker, .menu.open`).count(), 0, "no picker opens");
     });
@@ -110,10 +110,10 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
       const copies = [];
       const page = await open("http://magpie.test/", "zh", copies);
       const b = page.locator(`${row("agy")} .field.launch`);
-      assert.match(await b.getAttribute("title"), /Antigravity CLI 只能从环境变量接入 magpie · 点击复制启动它的命令：/);
+      assert.match(await b.getAttribute("title"), /Antigravity 只能从环境变量接入 magpie · 点击复制启动它的命令：/);
       await b.click();
       await page.waitForTimeout(300);
-      assert.match(await page.locator("#status").textContent(), /已复制，运行它即可让 Antigravity CLI 走 magpie/);
+      assert.match(await page.locator("#status").textContent(), /已复制，运行它即可让 Antigravity 走 magpie/);
     });
 
     assert.deepEqual(errors, []);

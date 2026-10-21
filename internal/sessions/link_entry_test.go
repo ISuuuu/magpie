@@ -126,7 +126,7 @@ func hermesSessions() int {
 	return n
 }
 
-// An Antigravity CLI conversation folder that is a link keeps its calls.
+// An Antigravity conversation folder that is a link keeps its calls.
 func TestAgyConversationBehindALink(t *testing.T) {
 	claude, _ := setup(t)
 	agy := filepath.Join(filepath.Dir(claude), "home", ".gemini", "antigravity-cli")

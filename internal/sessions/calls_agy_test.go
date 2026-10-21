@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-// #2097 (parkavenue9639): Antigravity CLI's own calls reach the usage
+// #2097 (parkavenue9639): Antigravity's own calls reach the usage
 // ledger. testdata/agy/brain holds three conversations: one agy 1.2.16
 // wrote in a sandbox against a fake Gemini endpoint (three model steps,
 // one with 40 thought tokens in its output, and a turn that failed to

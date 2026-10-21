@@ -256,7 +256,7 @@ func parseGemini(body []byte) (*Request, error) {
 		}
 		msg := Message{Role: role}
 		// a function's result is the user's side of the turn whatever role
-		// it came under: Antigravity CLI sends its tools' results as
+		// it came under: Antigravity sends its tools' results as
 		// "model" (#650), and kept there the request ends with the model's
 		// turn, which Antigravity turns away
 		turn := func(role string) {

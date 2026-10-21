@@ -1,5 +1,5 @@
 // Run with Node's test runner and Playwright on the module path; see README.md.
-// #2202 (Chichengmo): Antigravity CLI wasn't on the RTK tab, though rtk
+// #2202 (Chichengmo): Antigravity wasn't on the RTK tab, though rtk
 // 0.51 has a global plugin for it. With an rtk older than 0.51 (0.50 knows
 // it only per project) its row says to update RTK with its own reason, not
 // Codex's @RTK.md one, and its switch can't be turned on; Codex's row keeps
@@ -16,13 +16,13 @@ const HOME = "/Users/aimer";
 const agent = (id, name) => ({ id, name, icon: "", skills: `${HOME}/.${id}/skills`, mcp: `${HOME}/.${id}/mcp.json` });
 const lib = () => ({
   dir: `${HOME}/.magpie/library`, backups: `${HOME}/.magpie/backups`, home: HOME,
-  agents: [agent("agy", "Antigravity CLI"), agent("codex", "Codex")],
+  agents: [agent("agy", "Antigravity"), agent("codex", "Codex")],
   instructions: { agents: [], sets: [] }, foundServers: [], projects: [], foundSkills: [], skills: [], servers: [],
 });
 const rtkView = () => ({
   path: `${HOME}/.local/bin/rtk`, version: "0.49.0", url: "https://www.rtk-ai.app",
   agents: [
-    { id: "agy", name: "Antigravity CLI", icon: "", on: false, blocked: "Antigravity CLI's hook needs RTK 0.51 or newer" },
+    { id: "agy", name: "Antigravity", icon: "", on: false, blocked: "Antigravity's hook needs RTK 0.51 or newer" },
     { id: "codex", name: "Codex", icon: "", on: false, blocked: "Codex's hook needs RTK 0.50 or newer" },
   ],
 });
@@ -59,7 +59,7 @@ const words = {
 };
 
 for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium", "webkit"])) {
-  test(engine + ": Antigravity CLI with an RTK before 0.51 says to update, in its own words", async (t) => {
+  test(engine + ": Antigravity with an RTK before 0.51 says to update, in its own words", async (t) => {
     assert(["chromium", "webkit"].includes(engine), "BROWSER must be chromium or webkit");
     const browser = await (engine === "webkit" ? webkit.launch() : chromium.launch({ channel: "chromium" }));
     const errors = [];
@@ -80,15 +80,15 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         await page.locator('button[data-view="library"]').click();
         const v = page.locator("#view-library");
         const row = (name) => v.locator(".lib-row").filter({ has: page.locator(".name", { hasText: name }) });
-        await row("Antigravity CLI").waitFor();
-        const tag = row("Antigravity CLI").locator(".lib-tag");
+        await row("Antigravity").waitFor();
+        const tag = row("Antigravity").locator(".lib-tag");
         assert.deepEqual(await tag.allTextContents(), [w.tag]);
         const why = await tag.getAttribute("title");
         assert(why.includes(w.agy), why);
         assert(!why.includes("@RTK.md"), why);
         const ctag = await row("Codex").locator(".lib-tag").getAttribute("title");
         assert(ctag.includes(w.codex) && ctag.includes("@RTK.md"), ctag);
-        const sw = row("Antigravity CLI").locator(".lib-switch");
+        const sw = row("Antigravity").locator(".lib-switch");
         assert.equal(await sw.isDisabled(), true);
         await sw.click({ force: true });
         assert.deepEqual(calls, []);

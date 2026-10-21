@@ -19,7 +19,7 @@ const agent = (id, name, value) => ({ id, name, icon: "generic", path: "/fixture
 // the reporter's list: Codex in use, two hidden, three with nothing set
 const agents = [
   { ...agent("codex", "Codex", "relay/m1"), wired: true },
-  agent("agy", "Antigravity CLI", ""), agent("commandcode", "Command Code", ""),
+  agent("agy", "Antigravity", ""), agent("commandcode", "Command Code", ""),
   agent("dsh", "DeepSeek Harness", ""), agent("zed", "Zed", ""), agent("alma", "Alma", ""),
 ];
 

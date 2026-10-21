@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-// Antigravity CLI's (agy's) calls (#2097, parkavenue9639: a call agy made
+// Antigravity's (agy's) calls (#2097, parkavenue9639: a call agy made
 // without magpie was counted nowhere). Each conversation keeps a transcript
 // of its steps in
 // ~/.gemini/antigravity-cli/brain/<conversation id>/.system_generated/logs/transcript_full.jsonl,
