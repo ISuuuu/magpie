@@ -2225,6 +2225,9 @@ var grokWindow = regexp.MustCompile(`^((?:.*/)?grok-[0-9][^/@]*)@[0-9]+k?$`)
 // the model it is that window of. Codex Auto Review uses GPT-5.6 Luna
 // according to OpenAI's rate card (2026-09-30):
 // https://help.openai.com/en/articles/11481834-chatgpt-rate-card-business-enterpriseedu-credit-based-pricing
+// Google's Code Assist backend reports Gemini deployment ids with a trailing
+// "-n" (gemini-3.8-flash-n), an id the catalog does not list; price it as
+// the family id without the suffix.
 // This is a list-price estimate, not evidence of a response's served model.
 // Other names without catalog prices stay unpriced here (grok-4.7-build,
 // grok-4.7-mini, grok-4.7-fast); a Cursor account's fast ids are priced at
@@ -2234,6 +2237,9 @@ func pricedNames(model string) []string {
 	out := []string{model}
 	if model == "codex-auto-review" {
 		out = append(out, "gpt-5.6-luna")
+	}
+	if base, ok := strings.CutSuffix(model, "-n"); ok && strings.HasPrefix(base, "gemini") {
+		out = append(out, base)
 	}
 	if m := grokWindow.FindStringSubmatch(strings.ToLower(strings.TrimSpace(model))); m != nil {
 		out = append(out, m[1])

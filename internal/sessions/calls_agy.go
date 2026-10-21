@@ -11,8 +11,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/yetone/magpie/internal/dirent"
 )
 
 // Antigravity CLI's (agy's) calls (#2097, parkavenue9639: a call agy made
@@ -46,34 +44,25 @@ func AgyDir() string {
 
 // agyCallFiles are each conversation's transcript_full.jsonl.
 func agyCallFiles() []file {
-	dirs, _ := os.ReadDir(filepath.Join(AgyDir(), "brain"))
-	var out []file
-	for _, d := range dirs {
-		if !dirent.IsFolder(filepath.Join(AgyDir(), "brain"), d) {
-			continue
-		}
-		p := filepath.Join(AgyDir(), "brain", d.Name(), ".system_generated", "logs", "transcript_full.jsonl")
-		f := file{agent: "agy", key: "agy:" + d.Name(), path: p, main: true}
-		if stat(&f) {
-			out = append(out, f)
-		}
-	}
-	return out
+	return agyFiles()
 }
 
 type agyStep struct {
-	Step      *int   `json:"step_index"`
-	Source    string `json:"source"`
-	CreatedAt string `json:"created_at"`
-	Input     *int   `json:"input_tokens"`
-	CacheRead *int   `json:"cache_read_tokens"`
-	Output    *int   `json:"output_tokens"`
+	Step       *int   `json:"step_index"`
+	Source     string `json:"source"`
+	CreatedAt  string `json:"created_at"`
+	Input      *int   `json:"input_tokens"`
+	CacheRead  *int   `json:"cache_read_tokens"`
+	Output     *int   `json:"output_tokens"`
+	ResponseID string `json:"response_id,omitempty"`
+	MessageID  string `json:"message_id,omitempty"`
 }
 
 var agyTokens = []byte(`"output_tokens"`)
 
 // readAgyCalls reads a transcript whole: agy may write a step's line again
-// as it finishes, and a step is counted once by its index.
+// as it finishes, and a step is counted once by its index (or folded by
+// response id).
 func readAgyCalls(f file) (*callFile, bool) {
 	r, err := os.Open(f.path)
 	if err != nil {
@@ -81,7 +70,7 @@ func readAgyCalls(f file) (*callFile, bool) {
 	}
 	defer r.Close()
 	st := &callFile{Agent: "agy", Path: f.path, Session: strings.TrimPrefix(f.key, "agy:")}
-	at := map[int]int{} // a step's index → its call in st.Calls
+	at := map[string]int{} // a step's fold key → its call in st.Calls
 	br := bufio.NewReaderSize(r, scanBuffer(r, 0))
 	for {
 		b, err := br.ReadBytes('\n')
@@ -92,11 +81,11 @@ func readAgyCalls(f file) (*callFile, bool) {
 		if len(b) > 0 && len(b) <= maxLine && bytes.Contains(b, agyTokens) {
 			var s agyStep
 			if json.Unmarshal(b, &s) == nil {
-				if c, ok := agyCall(st, s); ok {
-					if i, seen := at[*s.Step]; seen {
+				if c, key, ok := agyCall(st, s); ok {
+					if i, seen := at[key]; seen {
 						st.Calls[i] = c
 					} else {
-						at[*s.Step] = len(st.Calls)
+						at[key] = len(st.Calls)
 						st.Calls = append(st.Calls, c)
 					}
 				}
@@ -110,21 +99,34 @@ func readAgyCalls(f file) (*callFile, bool) {
 }
 
 // agyCall is a model's step as a call.
-func agyCall(st *callFile, s agyStep) (Call, bool) {
+func agyCall(st *callFile, s agyStep) (Call, string, bool) {
 	if s.Source != "MODEL" || s.Step == nil || s.Input == nil || s.Output == nil {
-		return Call{}, false
+		return Call{}, "", false
 	}
 	t, err := time.Parse(time.RFC3339, s.CreatedAt)
 	if err != nil {
-		return Call{}, false
+		return Call{}, "", false
 	}
-	c := Call{Agent: "agy", Time: t, Session: st.Session, Tokens: Tokens{Input: *s.Input, Output: *s.Output}}
+	c := Call{
+		Agent:      "agy",
+		Time:       t,
+		Session:    st.Session,
+		Tokens:     Tokens{Input: *s.Input, Output: *s.Output},
+		ResponseID: s.ResponseID,
+	}
 	if s.CacheRead != nil {
 		c.CacheRead = *s.CacheRead
 	}
 	if c.Tokens.zero() {
-		return Call{}, false
+		return Call{}, "", false
 	}
-	c.Msg = st.str("agy:" + st.Session + ":" + strconv.Itoa(*s.Step))
-	return c, true
+	key := s.ResponseID
+	if key == "" {
+		key = s.MessageID
+	}
+	if key == "" {
+		key = strconv.Itoa(*s.Step)
+	}
+	c.Msg = st.str("agy:" + st.Session + ":" + key)
+	return c, key, true
 }

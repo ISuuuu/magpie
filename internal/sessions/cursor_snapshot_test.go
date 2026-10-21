@@ -129,6 +129,10 @@ func TestCursorLeftCopiesSwept(t *testing.T) {
 	t.Setenv("TMPDIR", t.TempDir())
 	left := filepath.Join(os.TempDir(), "magpie-cursor-left")
 	fresh := filepath.Join(os.TempDir(), "magpie-cursor-fresh")
+	t.Cleanup(func() {
+		os.RemoveAll(left)
+		os.RemoveAll(fresh)
+	})
 	for _, d := range []string{left, fresh} {
 		if err := os.MkdirAll(d, 0700); err != nil {
 			t.Fatal(err)

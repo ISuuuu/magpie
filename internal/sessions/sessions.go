@@ -223,6 +223,8 @@ type state struct {
 	Dsh *dshCarry `json:"dsh,omitempty"`
 	// Cline: the messages file its counts were read from
 	Cline *clineCarry `json:"cline,omitempty"`
+	// Antigravity: where its transcript was read to
+	Agy *agyCarry `json:"agy,omitempty"`
 }
 
 // day is one local date's share of a file: tokens by model, and the time
@@ -493,7 +495,7 @@ func allFiles() []file {
 	var out []file
 	for _, fs := range [][]file{callFiles(), openCodeFiles(), piFiles(),
 		wslFiles("pi", "omp", "kimi"), zcodeFiles(), dshFiles(), clineFiles(), ccFiles("qoder", QoderDir("qoder")), ccFiles("qoder-cn", QoderDir("qoder-cn")),
-		grokFiles(), workbuddyFiles(), codebuddyFiles(), droidFiles(), ompFiles(), cursorFiles(), hermesFiles(), almaFiles(), kimiFiles()} {
+		grokFiles(), workbuddyFiles(), codebuddyFiles(), droidFiles(), ompFiles(), cursorFiles(), hermesFiles(), almaFiles(), kimiFiles(), agyFiles()} {
 		out = append(out, fs...)
 	}
 	return out
@@ -525,6 +527,11 @@ func Dirs() []string {
 	} {
 		if _, err := os.Stat(d.sessions); err == nil {
 			out = append(out, d.dir)
+		}
+	}
+	for _, d := range agyDirs() {
+		if _, err := os.Stat(filepath.Join(d, "brain")); err == nil {
+			out = append(out, d)
 		}
 	}
 	out = append(out, HermesDirs()...)
@@ -1282,6 +1289,8 @@ func parserFor(agent string) sessionParser {
 		return sessionParser{grow: parseKimi}
 	case "droid":
 		return sessionParser{grow: parseDroid}
+	case "agy":
+		return sessionParser{grow: parseAgy}
 	case "cursor":
 		return sessionParser{whole: parseCursor}
 	case "codex":
@@ -1841,6 +1850,8 @@ func resumeCommand(distro, agent, id, cwd, path string) string {
 		}
 	case "droid":
 		run = "droid --resume " + id
+	case "agy":
+		run = "antigravity --resume " + id
 	case "kimi":
 		run = "kimi --session " + id
 	case "cursor":
